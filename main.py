@@ -43,29 +43,63 @@ test_env = make_vec_env(env_id, n_envs=1)
 obs = test_env.reset()
 
 results = []
-try:
-    while True:
-        action, _states = agent.predict(obs)
-        # print("Action: ", action)
-        obs, rewards, dones, info = test_env.step(action)
-        # print("Reward: ", rewards[0])
-        # print("Done: ", dones)
-        results.append(rewards[0])
-        # sleep(0.5)
-        # results.append({"obs": obs, "rewards": rewards, "dones": dones, "info": info})
-        if dones[0]:
-            print("Episode finished!")
-            print("Rewards: ", results)
-            print("Total rewards: ", sum(results))
-            if sum(results) > 200:
-                print("Sucesso!")
-            else:
-                print("Falha!")
-            results = []
-            obs = test_env.reset()
-        test_env.render()
-except KeyboardInterrupt:
-    test_env.close()
-    print("Teste finalizado!")
-    print("Resultados: ", results)
+count = 0
+resultados = []
+
+while True:
+    if count >= 20:
+        break
+
+    action, _states = agent.predict(obs)
+    # print("Action: ", action)
+    obs, rewards, dones, info = test_env.step(action)
+    # print("Reward: ", rewards[0])
+    # print("Done: ", dones)
+    results.append(rewards[0])
+    # sleep(0.5)
+    # results.append({"obs": obs, "rewards": rewards, "dones": dones, "info": info})
+    if dones[0]:
+        print("Episodio Finalizado!")
+        print("Recompensas: ", results)
+        print("Score: ", sum(results))
+        if sum(results) > 200:
+            print("Episodio bem sucedido!")
+        else:
+            print("Episodio mal sucedido!")
+        resultados.append({ "id": count, "score": sum(results), "status": "sucesso" if sum(results) > 200 else "fracasso"})
+        results = []
+        count += 1
+        obs = test_env.reset()
+    test_env.render()
+
+test_env.close()
+
+# Resultados
+
+for i in resultados:
+    print(i)
+    print("\n")
+
+# porcentagem de sucesso
+
+sucessos = 0
+fracassos = 0
+
+for i in resultados:
+    if i["status"] == "sucesso":
+        sucessos += 1
+    else:
+        fracassos += 1
+
+print("Porcentagem de sucesso: ", (sucessos / (sucessos + fracassos)) * 100, "%")
+
+# media de score
+
+soma = 0
+for i in resultados:
+    soma += i["score"]
+
+print("Media de score: ", soma / len(resultados))
+
+
 
