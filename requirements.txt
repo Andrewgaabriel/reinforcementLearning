@@ -1,2 +1,6 @@
 stable-baselines3
 gymnasium
+gymnasium[box2d]
+pyglet==1.5.27
+opencv-python
+stable-baselines3[extra]
