@@ -6,21 +6,37 @@ from GridSearch import GridSearchRL
 
 
 
-
-
-
+# Não alterar
 AMBIENTE = "LunarLander-v2"
 SEED = 42
-GAMMA = 0.99
-ENT_COEF = 0.001
-LEARNING_RATE = 5e-4
-BUFFERSIZE = int(1e5)
-TIMESTEPS = 100000
-UPDATE_EVERY = 4
-BATCH_SIZE = 64
-EPISODIOS = 20
-TAU = 1e-3
+
+
+# Alterar só se for usar Grid Search
 USEGRIDSEARCH = False
+
+
+# Tempo de treinamento e testes
+TIMESTEPS = 100000
+
+
+# Quantidade de episódios para testar
+EPISODIOS = 20
+
+
+# Hiperparâmetros (usado no A2C)
+ENT_COEF = 0.001
+
+
+# Hiperparâmetros (usado no A2C e DQN)
+GAMMA = 0.99
+LEARNING_RATE = 5e-4
+
+
+# Hiperparâmetros (usado no DQN)
+BUFFERSIZE = int(1e5)
+BATCH_SIZE = 64
+TAU = 1e-3
+
 
 
 # Criando os ambientes
@@ -32,7 +48,7 @@ ambiente_teste.seed(SEED)
 
 
 # Usando Grid Search para encontrar os melhores hiperparâmetros
-
+# PARA USAR O GRID SEARCH, USEGRIDSEARCH = True
 if USEGRIDSEARCH:
 
     algoritmos = [DQN]
@@ -51,23 +67,30 @@ if USEGRIDSEARCH:
 
 
 # Instanciando os agentes
-if USEGRIDSEARCH:
+if USEGRIDSEARCH: # Se estiver usando Grid Search, instanciar os agentes com os melhores hiperparâmetros encontrados
     agentes = []
     for algoritmo in algoritmos:
         agentes.append(Agente(algoritmo("MlpPolicy", ambiente_treino, gamma=melhores_parametros["gamma"], ent_coef=melhores_parametros["ent_coef"], verbose=1, learning_rate=melhores_parametros["learning_rate"], seed=SEED), algoritmo.__name__))
 
-else:
+else: # Se não estiver usando Grid Search, instanciar os agentes com os hiperparâmetros definidos no início do código
+    # Descomentar o A2C se quiser testar ele também 
     agentes = (
         Agente(DQN("MlpPolicy", ambiente_treino, gamma=GAMMA,  verbose=1, learning_rate=LEARNING_RATE, seed=SEED, buffer_size=BUFFERSIZE, batch_size=BATCH_SIZE, target_update_interval=TAU), "DQN"),
         #Agente(A2C("MlpPolicy", ambiente_treino, gamma=GAMMA, ent_coef=ENT_COEF, verbose=1, learning_rate=LEARNING_RATE, seed=SEED), "A2C")
     )
+
+
 # Treinando os agentes
 for agente in agentes:
     agente.treinar(TIMESTEPS)
 
+
+
 # Testando os agentes
 for agente in agentes:
     agente.testar(EPISODIOS , ambiente_teste)
+
+
 
 # Salvando os agentes
 for agente in agentes:
