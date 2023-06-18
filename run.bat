@@ -18,9 +18,24 @@ REM Instala as dependências
 echo Instalando dependências...
 pip install -r requirements.txt
 
+REM Pede que programa seja executado
+echo Pressione 1 para executar sem Interface Grafica ou 2 para executar com Interface Grafica
+set /p opcao= 
+
+REM Define o programa a ser executado
+if %opcao%==1 (
+    set PROGRAMA=App.py
+) else if %opcao%==2 (
+    set PROGRAMA=AppVisual.py
+) else (
+    echo Opção inválida
+    pause
+    exit
+)
+
 REM Executa o programa
 echo Executando programa...
-python main.py
+python %PROGRAMA%
 
 REM Desativa o ambiente virtual
 echo Desativando ambiente virtual...
