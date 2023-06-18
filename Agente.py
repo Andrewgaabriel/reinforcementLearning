@@ -7,20 +7,27 @@ class Agente:
         self.nome = nome
 
     def treinar(self, total_timesteps: int):
-        print("Treinando o agente...")
+        print("="*70)
+        print("Treinando o agente ", self.nome, "...\n\n")
+        print("="*70)
         self.model.learn(total_timesteps=total_timesteps)
 
     def salvar(self):
+        print("="*70)
         print("Salvando o agente...")
+        print("="*70)
         self.model.save("agentes/" + self.nome)
 
     def carregar(self, nome: str):
+        print("="*70)
         print("Carregando o agente...")
+        print("="*70)
         self.model = self.model.load(nome)
 
     
 
     def testar(self, total_timesteps: int, env):
+        print("="*70)
         print("Testando o agente ", self.nome, "...\n\n")
         print("="*70)
         obs = env.reset()

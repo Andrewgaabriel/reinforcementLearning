@@ -1,4 +1,4 @@
-from stable_baselines3 import A2C
+from stable_baselines3 import A2C,DQN
 from stable_baselines3.common.env_util import make_vec_env
 
 from Agente import Agente
@@ -11,12 +11,16 @@ from GridSearch import GridSearchRL
 
 AMBIENTE = "LunarLander-v2"
 SEED = 42
-GAMMA = 0.95
+GAMMA = 0.99
 ENT_COEF = 0.001
-LEARNING_RATE = 0.001
-TIMESTEPS = 100
+LEARNING_RATE = 5e-4
+BUFFERSIZE = int(1e5)
+TIMESTEPS = 100000
+UPDATE_EVERY = 4
+BATCH_SIZE = 64
 EPISODIOS = 20
-USEGRIDSEARCH = True
+TAU = 1e-3
+USEGRIDSEARCH = False
 
 
 # Criando os ambientes
@@ -31,11 +35,11 @@ ambiente_teste.seed(SEED)
 
 if USEGRIDSEARCH:
 
-    algoritmos = [A2C]
+    algoritmos = [DQN]
 
     hparams = {
         "gamma": [0.95, 0.99],
-        "ent_coef": [0.001, 0.1],
+        #"ent_coef": [0.001, 0.1],
         "learning_rate": [0.0001, 0.001, 0.01]
     }
 
@@ -54,7 +58,8 @@ if USEGRIDSEARCH:
 
 else:
     agentes = (
-        Agente(A2C("MlpPolicy", ambiente_treino, gamma=GAMMA, ent_coef=ENT_COEF, verbose=1, learning_rate=LEARNING_RATE, seed=SEED), "A2C"),
+        Agente(DQN("MlpPolicy", ambiente_treino, gamma=GAMMA,  verbose=1, learning_rate=LEARNING_RATE, seed=SEED, buffer_size=BUFFERSIZE, batch_size=BATCH_SIZE, target_update_interval=TAU), "DQN"),
+        #Agente(A2C("MlpPolicy", ambiente_treino, gamma=GAMMA, ent_coef=ENT_COEF, verbose=1, learning_rate=LEARNING_RATE, seed=SEED), "A2C")
     )
 # Treinando os agentes
 for agente in agentes:
